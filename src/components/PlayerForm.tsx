@@ -1,4 +1,4 @@
-import type { formSchema } from "@/schema";
+import type { formSchema, playerSchema } from "@/schema";
 import { PlusCircle } from "lucide-react";
 import { useEffect } from "react";
 import {
@@ -21,15 +21,17 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { getScore } from "./utils";
 
 type Props = {
     playerIndex: number;
+    playerData: z.infer<typeof playerSchema>;
     control: Control<z.infer<typeof formSchema>>;
     setValue: UseFormSetValue<z.infer<typeof formSchema>>;
 };
 
 export default function PlayerForm(props: Props) {
-    const { playerIndex, control, setValue } = props;
+    const { playerIndex, playerData, control, setValue } = props;
     const isMahjong = useWatch({
         control,
         name: `players.${playerIndex}.isMahjong`,
@@ -71,7 +73,10 @@ export default function PlayerForm(props: Props) {
 
     return (
         <div className="p-2 border-1 shadow-sm rounded-lg bg-slate-50">
-            <H3>Player {playerIndex + 1}</H3>
+            <div className="flex justify-between">
+                <H3>Player {playerIndex + 1}</H3>
+                <div>{getScore(playerData)} pts</div>
+            </div>
             <div className="flex flex-col gap-4">
                 <FormField
                     // Player name

@@ -1,32 +1,16 @@
 // components/PlayerForm.tsx
 import { Button } from "@/components/ui/button";
 import { formSchema } from "@/schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, type UseFormReturn } from "react-hook-form";
 import type z from "zod";
 import PlayerForm from "./PlayerForm";
 
-const defaultValues: z.infer<typeof formSchema> = {
-    players: new Array(4).fill(0).map(() => ({
-        name: "",
-        isEastWind: false,
-        isMahjong: false,
-        isLastChance: false,
-        nbFlowers: 0,
-        hasOwnFlower: false,
-        nbSeasons: 0,
-        hasOwnSeason: false,
-        isSingleSuit: false,
-        nbFlowersAndSeasons: 0,
-        sets: [],
-    })),
+type Props = {
+    form: UseFormReturn<z.infer<typeof formSchema>>;
 };
 
-export default function ScoreForm() {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues,
-    });
+export default function ScoreForm(props: Props) {
+    const { form } = props;
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log("Form submitted:", values);
@@ -40,6 +24,7 @@ export default function ScoreForm() {
                         <PlayerForm
                             key={index}
                             playerIndex={index}
+                            playerData={form.watch(`players.${index}`)}
                             control={form.control}
                             setValue={form.setValue}
                         />

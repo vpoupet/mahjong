@@ -121,7 +121,7 @@ export default function SetForm(props: Props) {
             break;
         case "chow":
             return (
-                <div className="border-black border-1 p-2 rounded-lg">
+                <div className="p-2 rounded-lg shadow-sm bg-white">
                     <div className="flex gap-4">
                         <span className="font-bold">Chow</span>
                         <Button
@@ -137,7 +137,7 @@ export default function SetForm(props: Props) {
             break;
         case "pair":
             return (
-                <div className="border-black border-1 p-2 rounded-lg">
+                <div className="p-2 rounded-lg shadow-sm bg-white">
                     <div className="flex gap-4">
                         <span className="font-bold">Pair</span>
                         <Button
@@ -157,6 +157,7 @@ export default function SetForm(props: Props) {
                                 <FormItem className="flex items-center">
                                     <FormControl>
                                         <Checkbox
+                                            checked={field.value}
                                             onCheckedChange={field.onChange}
                                         />
                                     </FormControl>
