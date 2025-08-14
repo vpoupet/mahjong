@@ -1,9 +1,9 @@
 import type { PlayerData } from "@/schema";
 import PlayerCheckboxes from "./PlayerCheckboxes";
 import PlayerFlowersAndSeasons from "./PlayerFlowersAndSeasons";
+import PlayerName from "./PlayerName";
 import PlayerScoreDetails from "./PlayerScoreDetails";
 import PlayerSets from "./PlayerSets";
-import { H3 } from "./typography";
 import { getScore } from "./utils";
 
 type Props = {
@@ -14,17 +14,13 @@ type Props = {
 };
 
 export default function Player(props: Props) {
-    const { playerData, setPlayerData, setMahjong } = props;
+    const { playerData, setPlayerData, setMahjong, setEastWind } = props;
+
     const score = getScore(playerData);
     return (
         <div className="p-2 border-1 shadow-sm rounded-lg bg-slate-50">
-            <div className="flex justify-between">
-                {/* Player Name */}
-                <H3>
-                    {playerData.name === ""
-                        ? `Player ${playerData.index + 1}`
-                        : playerData.name}
-                </H3>
+            <div className="h-12 flex justify-between">
+                <PlayerName playerData={playerData} setPlayerData={setPlayerData} />
                 <div>{score.base * score.mult} pts</div>
             </div>
             <div className="flex flex-col gap-4">
@@ -32,7 +28,7 @@ export default function Player(props: Props) {
                     playerData={playerData}
                     setPlayerData={setPlayerData}
                     setMahjong={setMahjong}
-                    setEastWind={props.setEastWind}
+                    setEastWind={setEastWind}
                 />
                 <PlayerFlowersAndSeasons
                     playerData={playerData}
