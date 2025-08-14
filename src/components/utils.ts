@@ -1,7 +1,6 @@
-import type { playerSchema, setSchema } from "@/schema";
-import type z from "zod";
+import type { PlayerData, SetData } from "@/schema";
 
-export function getSetScore(set: z.infer<typeof setSchema>) {
+export function getSetScore(set: SetData) {
     let base = 0;
     let mult = 1;
     const baseDetails: [number, string][] = [];
@@ -46,7 +45,7 @@ export function getSetScore(set: z.infer<typeof setSchema>) {
     };
 }
 
-export function getScore(playerData: z.infer<typeof playerSchema>) {
+export function getScore(playerData: PlayerData) {
     let base = 0;
     let mult = 1;
     const baseDetails: [number, string][] = [];

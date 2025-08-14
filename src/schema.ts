@@ -22,8 +22,10 @@ export const setSchema = z.discriminatedUnion("type", [
     chowSchema,
     pairSchema
 ]);
+export type SetData = z.infer<typeof setSchema>;
 
 export const playerSchema = z.object({
+    index: z.number(),
     name: z.string(),
     isEastWind: z.boolean(),
     isMahjong: z.boolean(),
@@ -35,7 +37,4 @@ export const playerSchema = z.object({
     isSingleSuit: z.boolean(),
     sets: z.array(setSchema),
 });
-
-export const formSchema = z.object({
-    players: z.array(playerSchema)
-});
+export type PlayerData = z.infer<typeof playerSchema>;
