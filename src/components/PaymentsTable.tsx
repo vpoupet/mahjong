@@ -1,17 +1,16 @@
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
-    TableRow,
+    TableRow
 } from "@/components/ui/table";
-import type { PlayerData } from "@/schema";
-import { getScore } from "./utils";
 import { cn } from "@/lib/utils";
+import type { PlayerData } from "@/schema";
 import { Crown } from "lucide-react";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { getScore } from "./utils";
 
 type Props = {
     playersData: PlayerData[];
@@ -52,42 +51,43 @@ export default function PaymentsTable(props: Props) {
     }
 
     return (
-        <Table className="bg-slate-50 rounded-lg shadow-sm mt-4 p-2">
-            <TableHeader>
-                <TableRow>
-                    <TableHead></TableHead>
-                    {playersData.map((player) => (
-                        <TableHead key={player.index}>
-                            <PlayerName playerData={player} />
-                        </TableHead>
-                    ))}
-                    <TableHead>Total</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {winnings.map((row, i) => (
-                    <TableRow
-                        key={i}
-                        className={cn({
-                            "bg-slate-200": playersData[i].isEastWind,
-                        })}
-                    >
-                        <TableHead>
-                            <PlayerName playerData={playersData[i]} />
-                        </TableHead>
-                        {row.map((value, j) => (
-                            <TableCell className="text-center" key={j}>
-                                {i === j ? "" : value}
-                            </TableCell>
+        <div className="bg-slate-50 rounded-lg p-2">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead></TableHead>
+                        {playersData.map((player) => (
+                            <TableHead key={player.index}>
+                                <PlayerName playerData={player} />
+                            </TableHead>
                         ))}
-                        <TableCell className="text-right">
-                            {row.reduce((acc, curr) => acc + curr, 0)}
-                        </TableCell>
+                        <TableHead>Total</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-            <TableCaption>Players winnings</TableCaption>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {winnings.map((row, i) => (
+                        <TableRow
+                            key={i}
+                            className={cn({
+                                "bg-slate-200": playersData[i].isEastWind,
+                            })}
+                        >
+                            <TableHead>
+                                <PlayerName playerData={playersData[i]} />
+                            </TableHead>
+                            {row.map((value, j) => (
+                                <TableCell className="text-center" key={j}>
+                                    {i === j ? "" : value}
+                                </TableCell>
+                            ))}
+                            <TableCell className="text-right">
+                                {row.reduce((acc, curr) => acc + curr, 0)}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
     );
 }
 

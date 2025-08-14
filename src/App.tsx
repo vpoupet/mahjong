@@ -48,14 +48,14 @@ function App() {
     function setEastWind(index: number, value: boolean) {
         const newPlayersData = [...playersData];
         if (value) {
-          for (const playerData of newPlayersData) {
-            if (playerData.index !== index) {
-                playerData.isEastWind = false;
+            for (const playerData of newPlayersData) {
+                if (playerData.index !== index) {
+                    playerData.isEastWind = false;
+                }
             }
-          }
-          newPlayersData[index].isEastWind = true;
+            newPlayersData[index].isEastWind = true;
         } else {
-          newPlayersData[index].isEastWind = false;
+            newPlayersData[index].isEastWind = false;
         }
         setPlayersData(newPlayersData);
     }
@@ -64,20 +64,27 @@ function App() {
         <div className="min-h-screen min-w-screen bg-gradient-to-br from-slate-100 to-slate-300">
             <main className="p-2 max-w-xl m-auto ">
                 <H1>Mahjong Score Calculator</H1>
-                <div className="flex flex-col gap-1">
-                    {playersData.map((playerData, index) => (
-                        <Player
-                            key={index}
-                            playerData={playerData}
-                            setPlayerData={(playerData) =>
-                                setPlayerData(index, playerData)
-                            }
-                            setMahjong={(value) => setMahjong(index, value)}
-                            setEastWind={(value) => setEastWind(index, value)}
-                        />
-                    ))}
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
+                      {playersData.map((playerData, index) => (
+                          <Player
+                              key={index}
+                              playerData={playerData}
+                              setPlayerData={(playerData) =>
+                                  setPlayerData(index, playerData)
+                              }
+                              setMahjong={(value) => setMahjong(index, value)}
+                              setEastWind={(value) => setEastWind(index, value)}
+                          />
+                      ))}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                      <div className="text-xl text-center">
+                          Players Winnings
+                      </div>
+                      <PaymentsTable playersData={playersData} />
+                  </div>
                 </div>
-                <PaymentsTable playersData={playersData} />
             </main>
         </div>
     );
