@@ -69,7 +69,7 @@ export default function PaymentsTable(props: Props) {
                         <TableRow
                             key={i}
                             className={cn({
-                                "bg-slate-200": playersData[i].isEastWind,
+                                "bg-slate-200 hover:bg-slate-300": playersData[i].isEastWind,
                             })}
                         >
                             <TableHead>
@@ -98,7 +98,7 @@ function PlayerName(props: { playerData: PlayerData }) {
         <div className="flex items-center gap-1">
             <span>{playerData.name || `Player ${playerData.index + 1}`}</span>
             {playerData.isMahjong && (
-                <Tooltip delayDuration={500}>
+                <Tooltip delayDuration={200}>
                     <TooltipTrigger>
                         <Crown className="h-4 w-4" />
                     </TooltipTrigger>
