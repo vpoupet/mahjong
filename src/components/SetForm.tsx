@@ -55,7 +55,7 @@ export default function SetForm(props: Props) {
                         <Trash2 />
                     </Button>
                 </div>
-                {base} pts{mult > 1 ? ` (x${mult})` : ""}
+                {base} pts{mult > 1 ? ` (×${mult})` : ""}
             </div>
             <SetOptions
                 type={type}

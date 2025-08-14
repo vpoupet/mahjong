@@ -22,6 +22,7 @@ import {
 import { Input } from "./ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { getScore } from "./utils";
+import PlayerScoreDetails from "./PlayerScoreDetails";
 
 type Props = {
     playerIndex: number;
@@ -71,11 +72,12 @@ export default function PlayerForm(props: Props) {
         }
     }, [nbSeasons, playerIndex, setValue]);
 
+    const score = getScore(playerData);
     return (
         <div className="p-2 border-1 shadow-sm rounded-lg bg-slate-50">
             <div className="flex justify-between">
                 <H3>Player {playerIndex + 1}</H3>
-                <div>{getScore(playerData)} pts</div>
+                <div>{score.base * score.mult} pts</div>
             </div>
             <div className="flex flex-col gap-4">
                 <FormField
@@ -227,7 +229,7 @@ export default function PlayerForm(props: Props) {
                                         />
                                     </FormControl>
                                     <FormLabel className="">
-                                        Has own (x2)
+                                        Has own (×2)
                                     </FormLabel>
                                     <FormMessage />
                                 </FormItem>
@@ -279,7 +281,7 @@ export default function PlayerForm(props: Props) {
                                         />
                                     </FormControl>
                                     <FormLabel className="text-right">
-                                        Has own (x2)
+                                        Has own (×2)
                                     </FormLabel>
                                     <FormMessage />
                                 </FormItem>
@@ -298,7 +300,7 @@ export default function PlayerForm(props: Props) {
                                         onCheckedChange={field.onChange}
                                     />
                                 </FormControl>
-                                <FormLabel>Single suit (x2)</FormLabel>
+                                <FormLabel>Single suit (×2)</FormLabel>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -363,6 +365,7 @@ export default function PlayerForm(props: Props) {
                     </div>
                 </div>
             </div>
+            <PlayerScoreDetails score={score} />
         </div>
     );
 }

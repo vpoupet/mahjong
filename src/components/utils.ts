@@ -4,6 +4,8 @@ import type z from "zod";
 export function getSetScore(set: z.infer<typeof setSchema>) {
     let base = 0;
     let mult = 1;
+    const baseDetails: [number, string][] = [];
+    const multDetails: [number, string][] = [];
 
     switch (set.type) {
         case "pong": {
@@ -19,7 +21,9 @@ export function getSetScore(set: z.infer<typeof setSchema>) {
             }
             if (set.isDragonOrSelfWind) {
                 mult *= 2;
+                multDetails.push([2, "Pong of dragons or self wind"]);
             }
+            baseDetails.push([base, "Pong"]);
             break;
         }
         case "chow": {
@@ -28,6 +32,7 @@ export function getSetScore(set: z.infer<typeof setSchema>) {
         case "pair": {
             if (set.isDragonOrSelfWind) {
                 base += 2;
+                baseDetails.push([2, "Pair of dragons or self wind"]);
             }
             break;
         }
@@ -36,44 +41,61 @@ export function getSetScore(set: z.infer<typeof setSchema>) {
     return {
         base,
         mult,
+        baseDetails,
+        multDetails,
     };
 }
 
 export function getScore(playerData: z.infer<typeof playerSchema>) {
     let base = 0;
     let mult = 1;
+    const baseDetails: [number, string][] = [];
+    const multDetails: [number, string][] = [];
 
     // Mahjong specific points
     if (playerData.isMahjong) {
         base += 20;
+        baseDetails.push([20, "Mah-Jong"]);
         if (playerData.isOneForMahjong) {
             base += 2;
+            baseDetails.push([2, "One for Mah-Jong"]);
         }
         if (playerData.sets.filter((set) => set.type === "pong").length === 3) {
             // all Pong
             base += 10;
+            baseDetails.push([10, "All Pong"]);
         }
         if (playerData.sets.filter((set) => set.type === "chow").length === 3) {
             // all Chow
             base += 10;
+            baseDetails.push([10, "All Chow"]);
         }
     }
 
     // Flowers and seasons
-    base += playerData.nbFlowers * 4;
-    base += playerData.nbSeasons * 4;
+    const flowersAndSeasonsScore =
+        4 * playerData.nbFlowers + playerData.nbSeasons;
+    if (flowersAndSeasonsScore > 0) {
+        base += flowersAndSeasonsScore;
+        baseDetails.push([flowersAndSeasonsScore, "Flowers and Seasons"]);
+    }
     if (playerData.nbFlowers === 4) {
         mult *= 16;
+        multDetails.push([16, "All Flowers"]);
     } else if (playerData.hasOwnFlower) {
         mult *= 2;
+        multDetails.push([2, "Own Flower"]);
     }
     if (playerData.nbSeasons === 4) {
         mult *= 16;
+        multDetails.push([16, "All Seasons"]);
     } else if (playerData.hasOwnSeason) {
         mult *= 2;
+        multDetails.push([2, "Own Season"]);
     }
     if (playerData.isSingleSuit) {
         mult *= 2;
+        multDetails.push([2, "Single Suit"]);
     }
 
     // sets
@@ -81,9 +103,16 @@ export function getScore(playerData: z.infer<typeof playerSchema>) {
         const setScore = getSetScore(set);
         base += setScore.base;
         mult *= setScore.mult;
+        baseDetails.push(...setScore.baseDetails);
+        multDetails.push(...setScore.multDetails);
     }
 
-    return base * mult;
+    return {
+        base,
+        mult,
+        baseDetails,
+        multDetails,
+    };
 }
 
 export function toTitleCase(str: string | null): string | null {
