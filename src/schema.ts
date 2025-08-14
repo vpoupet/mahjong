@@ -27,7 +27,7 @@ export const playerSchema = z.object({
     name: z.string(),
     isEastWind: z.boolean(),
     isMahjong: z.boolean(),
-    isLastChance: z.boolean(),
+    isOneForMahjong: z.boolean(),
     nbFlowers: z.number().min(0).max(4),
     hasOwnFlower: z.boolean(),
     nbSeasons: z.number().min(0).max(4),

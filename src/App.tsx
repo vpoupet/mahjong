@@ -10,7 +10,7 @@ const defaultValues: z.infer<typeof formSchema> = {
         name: "",
         isEastWind: false,
         isMahjong: false,
-        isLastChance: false,
+        isOneForMahjong: false,
         nbFlowers: 0,
         hasOwnFlower: false,
         nbSeasons: 0,

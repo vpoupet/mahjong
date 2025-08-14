@@ -51,9 +51,9 @@ export default function PlayerForm(props: Props) {
     });
 
     useEffect(() => {
-        // Always force isLastChance to false when isMahjong is false
+        // Always force oneForMahjong to false when isMahjong is false
         if (isMahjong === false) {
-            setValue(`players.${playerIndex}.isLastChance`, false);
+            setValue(`players.${playerIndex}.isOneForMahjong`, false);
         }
     }, [isMahjong, playerIndex, setValue]);
 
@@ -105,7 +105,20 @@ export default function PlayerForm(props: Props) {
                             <FormItem className="flex gap-2">
                                 <FormControl>
                                     <Checkbox
-                                        onCheckedChange={field.onChange}
+                                        checked={field.value}
+                                        onCheckedChange={(value) => {
+                                            field.onChange(value);
+                                            if (value) {
+                                                for (let i = 0; i < 4; i++) {
+                                                    if (i !== playerIndex) {
+                                                        setValue(
+                                                            `players.${i}.isEastWind`,
+                                                            false
+                                                        );
+                                                    }
+                                                }
+                                            }
+                                        }}
                                     />
                                 </FormControl>
                                 <FormLabel>East Wind</FormLabel>
@@ -122,7 +135,19 @@ export default function PlayerForm(props: Props) {
                                 <FormControl>
                                     <Checkbox
                                         checked={field.value}
-                                        onCheckedChange={field.onChange}
+                                        onCheckedChange={(value) => {
+                                            field.onChange(value);
+                                            if (value) {
+                                                for (let i = 0; i < 4; i++) {
+                                                    if (i !== playerIndex) {
+                                                        setValue(
+                                                            `players.${i}.isMahjong`,
+                                                            false
+                                                        );
+                                                    }
+                                                }
+                                            }
+                                        }}
                                     />
                                 </FormControl>
                                 <FormLabel>Mah-Jong (+20)</FormLabel>
@@ -131,9 +156,9 @@ export default function PlayerForm(props: Props) {
                         )}
                     />
                     <FormField
-                        // Last Chance
+                        // One For Mah-Jong
                         control={control}
-                        name={`players.${playerIndex}.isLastChance`}
+                        name={`players.${playerIndex}.isOneForMahjong`}
                         render={({ field }) => (
                             <FormItem className="flex gap-2">
                                 <FormControl>
@@ -143,7 +168,7 @@ export default function PlayerForm(props: Props) {
                                         disabled={!isMahjong}
                                     />
                                 </FormControl>
-                                <FormLabel>Last Chance (+2)</FormLabel>
+                                <FormLabel>One for Mah-Jong (+2)</FormLabel>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -290,6 +315,7 @@ export default function PlayerForm(props: Props) {
                                 setValue={setValue}
                                 playerIndex={playerIndex}
                                 setIndex={index}
+                                setData={playerData.sets[index]}
                                 remove={() => remove(index)}
                             />
                         </div>
