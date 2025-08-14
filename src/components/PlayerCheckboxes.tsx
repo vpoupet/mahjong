@@ -15,7 +15,7 @@ export default function PlayerCheckboxes(props: Props) {
     return (
         <div className="flex flex-col gap-2">
             <div className="flex gap-4">
-                {/* East Wind, Mah-Jong and One for Mah-Jong*/}
+                {/* East Wind, Mahjong and One for Mahjong*/}
                 <div className="flex items-center gap-2">
                     <Checkbox
                         checked={playerData.isEastWind}
@@ -32,7 +32,7 @@ export default function PlayerCheckboxes(props: Props) {
                             setMahjong(checked);
                         }}
                     />
-                    <div>Mah-Jong (+20)</div>
+                    <div>Mahjong (+20)</div>
                 </div>
                 <div className="flex items-center gap-2">
                     <Checkbox
@@ -49,7 +49,7 @@ export default function PlayerCheckboxes(props: Props) {
                             "opacity-30": !playerData.isMahjong,
                         })}
                     >
-                        One for Mah-Jong (+2)
+                        One for Mahjong (+2)
                     </div>
                 </div>
             </div>

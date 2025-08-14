@@ -54,10 +54,10 @@ export function getScore(playerData: PlayerData) {
     // Mahjong specific points
     if (playerData.isMahjong) {
         base += 20;
-        baseDetails.push([20, "Mah-Jong"]);
+        baseDetails.push([20, "Mahjong"]);
         if (playerData.isOneForMahjong) {
             base += 2;
-            baseDetails.push([2, "One for Mah-Jong"]);
+            baseDetails.push([2, "One for Mahjong"]);
         }
         if (playerData.sets.filter((set) => set.type === "pong").length === 3) {
             // all Pong
@@ -111,6 +111,7 @@ export function getScore(playerData: PlayerData) {
         mult,
         baseDetails,
         multDetails,
+        total: base * mult,
     };
 }
 

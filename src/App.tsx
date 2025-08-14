@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { H1 } from "./components/typography";
-import { Button } from "./components/ui/button";
-import { type PlayerData } from "./schema";
+import PaymentsTable from "./components/PaymentsTable";
 import Player from "./components/Player";
+import { H1 } from "./components/typography";
+import { type PlayerData } from "./schema";
 
 const defaultValues: PlayerData[] = new Array(4).fill(0).map((_, i) => ({
     index: i,
@@ -63,7 +63,7 @@ function App() {
     return (
         <div className="min-h-screen min-w-screen bg-gradient-to-br from-slate-100 to-slate-300">
             <main className="p-2 max-w-xl m-auto ">
-                <H1>Mah-Jong Score Calculator</H1>
+                <H1>Mahjong Score Calculator</H1>
                 <div className="flex flex-col gap-1">
                     {playersData.map((playerData, index) => (
                         <Player
@@ -77,9 +77,7 @@ function App() {
                         />
                     ))}
                 </div>
-                <Button type="submit" className="mt-4">
-                    Submit
-                </Button>
+                <PaymentsTable playersData={playersData} />
             </main>
         </div>
     );
