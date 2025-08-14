@@ -74,7 +74,7 @@ export function getScore(playerData: z.infer<typeof playerSchema>) {
 
     // Flowers and seasons
     const flowersAndSeasonsScore =
-        4 * playerData.nbFlowers + playerData.nbSeasons;
+        4 * (playerData.nbFlowers + playerData.nbSeasons);
     if (flowersAndSeasonsScore > 0) {
         base += flowersAndSeasonsScore;
         baseDetails.push([flowersAndSeasonsScore, "Flowers and Seasons"]);
