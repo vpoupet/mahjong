@@ -133,3 +133,19 @@ export function toTitleCase(str: string | null): string | null {
         })
         .join("");
 }
+
+export function getNbTilesUsed(playerData: PlayerData) {
+    let nbTiles = 0;
+    for (const set of playerData.sets) {
+        switch (set.type) {
+            case "pong":
+            case "chow":
+                nbTiles += 3;
+                break;
+            case "pair":
+                nbTiles += 2;
+                break;
+        }
+    }
+    return nbTiles;
+}

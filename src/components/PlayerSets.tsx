@@ -2,6 +2,7 @@ import type { PlayerData, SetData } from "@/schema";
 import { Button } from "./ui/button";
 import { PlusCircle } from "lucide-react";
 import PlayerSet from "./PlayerSet";
+import { getNbTilesUsed } from "./utils";
 
 type Props = {
     playerData: PlayerData;
@@ -25,6 +26,8 @@ export default function PlayerSets(props: Props) {
         });
     }
 
+    const remainingTiles = 14 - getNbTilesUsed(playerData);
+
     return (
         <div className="flex flex-col gap-2">
             <div className="font-bold">Sets</div>
@@ -42,6 +45,7 @@ export default function PlayerSets(props: Props) {
                 <Button
                     type="button"
                     variant="outline"
+                    disabled={remainingTiles < 3}
                     onClick={() =>
                         setPlayerData({
                             sets: [
@@ -62,6 +66,7 @@ export default function PlayerSets(props: Props) {
                 <Button
                     type="button"
                     variant="outline"
+                    disabled={remainingTiles < 3}
                     onClick={() =>
                         setPlayerData({
                             sets: [
@@ -78,6 +83,7 @@ export default function PlayerSets(props: Props) {
                 <Button
                     type="button"
                     variant="outline"
+                    disabled={remainingTiles < 2}
                     onClick={() =>
                         setPlayerData({
                             sets: [

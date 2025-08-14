@@ -18,7 +18,7 @@ export default function PlayerSet(props: Props) {
         <div className="p-2 rounded-lg shadow-sm bg-white">
             <div className="flex justify-between">
                 <div className="flex gap-4 items-center">
-                    <span className="font-bold">
+                    <span className="font-bold w-12">
                         {toTitleCase(setData.type)}
                     </span>
                     <Button
