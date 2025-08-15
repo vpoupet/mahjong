@@ -16,7 +16,7 @@ export function getSetScore(set: SetData) {
                 base *= 2;
             }
             if (set.isKong) {
-                base *= 2;
+                base *= 4;
             }
             if (set.isDragonOrSelfWind) {
                 mult *= 2;
@@ -59,12 +59,12 @@ export function getScore(playerData: PlayerData) {
             base += 2;
             baseDetails.push([2, "One for Mahjong"]);
         }
-        if (playerData.sets.filter((set) => set.type === "pong").length === 3) {
+        if (playerData.sets.filter((set) => set.type === "pong").length === 4) {
             // all Pong
             base += 10;
             baseDetails.push([10, "All Pong"]);
         }
-        if (playerData.sets.filter((set) => set.type === "chow").length === 3) {
+        if (playerData.sets.filter((set) => set.type === "chow").length === 4) {
             // all Chow
             base += 10;
             baseDetails.push([10, "All Chow"]);
