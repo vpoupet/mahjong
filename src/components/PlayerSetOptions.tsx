@@ -1,32 +1,33 @@
 import type { SetData } from "@/schema";
 import { Checkbox } from "./ui/checkbox";
 import { cn } from "@/lib/utils";
+import type { TileSet } from "@/model/TileSet";
 
 type Props = {
-    setData: SetData;
+    set: TileSet;
     updateSet: (setData: SetData) => void;
 };
 
 export default function PlayerSetOptions(props: Props) {
-    const { setData, updateSet } = props;
+    const { set, updateSet } = props;
 
-    switch (setData.type) {
+    switch (set.type) {
         case "pong":
             return (
                 <div className="flex gap-4">
                     <div className="flex items-center gap-2">
                         <Checkbox
-                            checked={setData.isHonorOrTerminal}
+                            checked={set.isHonorOrTerminal}
                             onCheckedChange={(checked: boolean) => {
                                 if (!checked) {
                                     updateSet({
-                                        ...setData,
+                                        ...set,
                                         isDragonOrSelfWind: false,
                                         isHonorOrTerminal: checked,
                                     });
                                 } else {
                                     updateSet({
-                                        ...setData,
+                                        ...set,
                                         isHonorOrTerminal: checked,
                                     });
                                 }
@@ -36,10 +37,10 @@ export default function PlayerSetOptions(props: Props) {
                     </div>
                     <div className="flex items-center gap-2">
                         <Checkbox
-                            checked={setData.isKong}
+                            checked={set.isKong}
                             onCheckedChange={(checked: boolean) => {
                                 updateSet({
-                                    ...setData,
+                                    ...set,
                                     isKong: checked,
                                 });
                             }}
@@ -48,10 +49,10 @@ export default function PlayerSetOptions(props: Props) {
                     </div>
                     <div className="flex items-center gap-2">
                         <Checkbox
-                            checked={setData.isFromWall}
+                            checked={set.isFromWall}
                             onCheckedChange={(checked: boolean) => {
                                 updateSet({
-                                    ...setData,
+                                    ...set,
                                     isFromWall: checked,
                                 });
                             }}
@@ -60,18 +61,18 @@ export default function PlayerSetOptions(props: Props) {
                     </div>
                     <div className="flex items-center gap-2">
                         <Checkbox
-                            disabled={!setData.isHonorOrTerminal}
-                            checked={setData.isDragonOrSelfWind}
+                            disabled={!set.isHonorOrTerminal}
+                            checked={set.isDragonOrSelfWind}
                             onCheckedChange={(checked: boolean) => {
                                 updateSet({
-                                    ...setData,
+                                    ...set,
                                     isDragonOrSelfWind: checked,
                                 });
                             }}
                         />
                         <div
                             className={cn({
-                                "opacity-30": !setData.isHonorOrTerminal,
+                                "opacity-30": !set.isHonorOrTerminal,
                             })}
                         >
                             Dragon or self wind
@@ -86,10 +87,10 @@ export default function PlayerSetOptions(props: Props) {
                 <div className="flex gap-4">
                     <div className="flex items-center gap-2">
                         <Checkbox
-                            checked={setData.isDragonOrSelfWind}
+                            checked={set.isDragonOrSelfWind}
                             onCheckedChange={(checked: boolean) => {
                                 updateSet({
-                                    ...setData,
+                                    ...set,
                                     isDragonOrSelfWind: checked,
                                 });
                             }}

@@ -45,6 +45,41 @@ export function getSetScore(set: SetData) {
     };
 }
 
+export function makeWinningsTable(playersData: PlayerData[]) {
+    const winnings = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+    ];
+
+    for (let i = 0; i < 4; i++) {
+        const p1 = playersData[i];
+        const score1 = getScore(p1).total;
+        for (let j = i + 1; j < 4; j++) {
+            const p2 = playersData[j];
+            const score2 = getScore(p2).total;
+            if (p1.isMahjong) {
+                winnings[i][j] = score1;
+                winnings[j][i] = -score1;
+            } else if (p2.isMahjong) {
+                winnings[i][j] = -score2;
+                winnings[j][i] = score2;
+            } else {
+                winnings[i][j] = score1 - score2;
+                winnings[j][i] = score2 - score1;
+            }
+
+            if (p1.isEastWind || p2.isEastWind) {
+                winnings[i][j] *= 2;
+                winnings[j][i] *= 2;
+            }
+        }
+    }
+
+    return winnings;
+}
+
 export function getScore(playerData: PlayerData) {
     let base = 0;
     let mult = 1;

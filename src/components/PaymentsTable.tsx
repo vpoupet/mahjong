@@ -4,51 +4,22 @@ import {
     TableCell,
     TableHead,
     TableHeader,
-    TableRow
+    TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { PlayerData } from "@/schema";
+import { GameRound } from "@/model/GameRound";
+import type { Player } from "@/model/Player";
 import { Crown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { getScore } from "./utils";
+import { PlayerHand } from "@/model/PlayerHand";
 
 type Props = {
-    playersData: PlayerData[];
+    gameRound: GameRound;
 };
 
 export default function PaymentsTable(props: Props) {
-    const { playersData } = props;
-
-    const winnings = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-    ];
-
-    for (let i = 0; i < 4; i++) {
-        const p1 = playersData[i];
-        const score1 = getScore(p1).total;
-        for (let j = i + 1; j < 4; j++) {
-            const p2 = playersData[j];
-            const score2 = getScore(p2).total;
-            if (p1.isMahjong) {
-                winnings[i][j] = score1;
-                winnings[j][i] = -score1;
-            } else if (p2.isMahjong) {
-                winnings[i][j] = -score2;
-                winnings[j][i] = score2;
-            } else {
-                winnings[i][j] = score1 - score2;
-                winnings[j][i] = score2 - score1;
-            }
-
-            if (p1.isEastWind || p2.isEastWind) {
-                winnings[i][j] *= 2;
-                winnings[j][i] *= 2;
-            }
-        }
-    }
+    const { gameRound } = props;
+    const winnings = GameRound.winningsTable(gameRound);
 
     return (
         <div className="bg-slate-50 rounded-lg p-2">
@@ -56,24 +27,39 @@ export default function PaymentsTable(props: Props) {
                 <TableHeader>
                     <TableRow>
                         <TableHead></TableHead>
-                        {playersData.map((player) => (
+                        {gameRound.players.map((player) => (
                             <TableHead key={player.index}>
-                                <PlayerName playerData={player} />
+                                <PlayerName
+                                    player={player}
+                                    isMahjong={PlayerHand.isMahjong(
+                                        player.hand
+                                    )}
+                                    isEastWind={
+                                        gameRound.eastWindIndex === player.index
+                                    }
+                                />
                             </TableHead>
                         ))}
                         <TableHead>Total</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {winnings.map((row, i) => (
+                    {winnings.table.map((row, i) => (
                         <TableRow
                             key={i}
                             className={cn({
-                                "bg-slate-200 hover:bg-slate-300": playersData[i].isEastWind,
+                                "bg-blue-200 hover:bg-blue-300":
+                                    gameRound.eastWindIndex === i,
                             })}
                         >
                             <TableHead>
-                                <PlayerName playerData={playersData[i]} />
+                                <PlayerName
+                                    player={gameRound.players[i]}
+                                    isMahjong={PlayerHand.isMahjong(
+                                        gameRound.players[i].hand
+                                    )}
+                                    isEastWind={gameRound.eastWindIndex === i}
+                                />
                             </TableHead>
                             {row.map((value, j) => (
                                 <TableCell className="text-center" key={j}>
@@ -81,7 +67,7 @@ export default function PaymentsTable(props: Props) {
                                 </TableCell>
                             ))}
                             <TableCell className="text-right">
-                                {row.reduce((acc, curr) => acc + curr, 0)}
+                                {winnings.totals[i]}
                             </TableCell>
                         </TableRow>
                     ))}
@@ -91,16 +77,20 @@ export default function PaymentsTable(props: Props) {
     );
 }
 
-function PlayerName(props: { playerData: PlayerData }) {
-    const { playerData } = props;
+function PlayerName(props: {
+    player: Player;
+    isEastWind: boolean;
+    isMahjong: boolean;
+}) {
+    const { player, isMahjong } = props;
 
     return (
         <div className="flex items-center gap-1">
-            <span>{playerData.name || `Player ${playerData.index + 1}`}</span>
-            {playerData.isMahjong && (
+            <span>{player.name}</span>
+            {isMahjong && (
                 <Tooltip delayDuration={200}>
                     <TooltipTrigger>
-                        <Crown className="h-4 w-4" />
+                        <Crown className="h-4 w-4 bg-yellow-200 rounded-full" />
                     </TooltipTrigger>
                     <TooltipContent>Mahjong</TooltipContent>
                 </Tooltip>

@@ -1,25 +1,26 @@
+import { TileSet } from "@/model/TileSet";
 import type { SetData } from "@/schema";
 import { Trash2 } from "lucide-react";
-import { Button } from "./ui/button";
-import { getSetScore, toTitleCase } from "./utils";
 import PlayerSetOptions from "./PlayerSetOptions";
+import { Button } from "./ui/button";
+import { toTitleCase } from "./utils";
 
 type Props = {
-    setData: SetData;
+    set: TileSet;
     removeSet: () => void;
     updateSet: (setData: SetData) => void;
 };
 
 export default function PlayerSet(props: Props) {
-    const { setData, removeSet, updateSet } = props;
-    const { base, mult } = getSetScore(setData);
+    const { set, removeSet, updateSet } = props;
+    const { base, mult } = TileSet.getScore(set);
 
     return (
         <div className="p-2 rounded-lg shadow-sm bg-white">
             <div className="flex justify-between">
                 <div className="flex gap-4 items-center">
                     <span className="font-bold w-12">
-                        {toTitleCase(setData.type)}
+                        {toTitleCase(set.type)}
                     </span>
                     <Button
                         variant="outline"
@@ -31,7 +32,7 @@ export default function PlayerSet(props: Props) {
                 </div>
                 {base} pts{mult > 1 ? ` (×${mult})` : ""}
             </div>
-            <PlayerSetOptions setData={setData} updateSet={updateSet} />
+            <PlayerSetOptions set={set} updateSet={updateSet} />
         </div>
     );
 }

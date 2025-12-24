@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { Input } from "./ui/input";
-import type { PlayerData } from "@/schema";
-import { H3 } from "./typography";
+import type { Player } from "@/model/Player";
 import { Pencil } from "lucide-react";
+import { useState } from "react";
+import { H3 } from "./typography";
+import { Input } from "./ui/input";
+import { produce } from "immer";
 
 type Props = {
-    playerData: PlayerData;
-    setPlayerData: (playerData: Partial<PlayerData>) => void;
+    player: Player;
+    setPlayer: (player: Player) => void;
 };
 
 export default function PlayerName(props: Props) {
-    const { playerData, setPlayerData } = props;
+    const { player, setPlayer } = props;
     const [isEditingName, setIsEditingName] = useState<boolean>(false);
 
     if (isEditingName) {
@@ -18,8 +19,14 @@ export default function PlayerName(props: Props) {
             <Input
                 className="w-64"
                 placeholder="Player name"
-                value={playerData.name}
-                onChange={(e) => setPlayerData({ name: e.target.value })}
+                value={player.name}
+                onChange={(e) =>
+                    setPlayer(
+                        produce(player, (p) => {
+                            p.name = e.target.value;
+                        })
+                    )
+                }
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
                         setIsEditingName(false);
@@ -33,11 +40,7 @@ export default function PlayerName(props: Props) {
     } else {
         return (
             <div className="flex gap-4">
-                <H3>
-                    {playerData.name === ""
-                        ? `Player ${playerData.index + 1}`
-                        : playerData.name}
-                </H3>
+                <H3>{player.name}</H3>
                 <Pencil
                     className="cursor-pointer"
                     onClick={() => setIsEditingName(true)}

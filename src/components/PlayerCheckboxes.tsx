@@ -1,67 +1,50 @@
 import { cn } from "@/lib/utils";
-import type { PlayerData } from "@/schema";
+import type { Player } from "@/model/Player";
+import { PlayerHand } from "@/model/PlayerHand";
+import { produce } from "immer";
 import { Checkbox } from "./ui/checkbox";
 
 type Props = {
-    playerData: PlayerData;
-    setPlayerData: (playerData: Partial<PlayerData>) => void;
-    setMahjong: (value: boolean) => void;
-    setEastWind: (value: boolean) => void;
+    player: Player;
+    setPlayer: (player: Player) => void;
 };
 
 export default function PlayerCheckboxes(props: Props) {
-    const { playerData, setPlayerData, setMahjong, setEastWind } = props;
-
+    const { player, setPlayer } = props;
+    
     return (
         <div className="flex flex-col gap-2">
             <div className="flex gap-4">
-                {/* East Wind, Mahjong and One for Mahjong*/}
+                {/* One for Mahjong */}
                 <div className="flex items-center gap-2">
                     <Checkbox
-                        checked={playerData.isEastWind}
+                        checked={player.hand.isOneForMahjong}
                         onCheckedChange={(checked: boolean) => {
-                            setEastWind(checked);
+                            setPlayer(
+                                produce(player, (p) => {
+                                    p.hand.isOneForMahjong = checked;
+                                })
+                            );
                         }}
-                    />
-                    <span>East Wind</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Checkbox
-                        checked={playerData.isMahjong}
-                        onCheckedChange={(checked: boolean) => {
-                            setMahjong(checked);
-                        }}
-                    />
-                    <div>Mahjong (+20)</div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Checkbox
-                        checked={playerData.isOneForMahjong}
-                        onCheckedChange={(checked: boolean) => {
-                            setPlayerData({
-                                isOneForMahjong: checked,
-                            });
-                        }}
-                        disabled={!playerData.isMahjong}
                     />
                     <div
                         className={cn({
-                            "opacity-30": !playerData.isMahjong,
+                            "opacity-30": !PlayerHand.isMahjong(player.hand),
                         })}
                     >
                         One for Mahjong (+2)
                     </div>
                 </div>
-            </div>
-            <div className="flex gap-4">
-                {/* Other checkboxes (single suit) */}
+                {/* Single Suit */}
                 <div className="flex items-center gap-2">
                     <Checkbox
-                        checked={playerData.isSingleSuit}
+                        checked={player.hand.isSingleSuit}
                         onCheckedChange={(checked: boolean) => {
-                            setPlayerData({
-                                isSingleSuit: checked,
-                            });
+                            setPlayer(
+                                produce(player, (p) => {
+                                    p.hand.isSingleSuit = checked;
+                                })
+                            );
                         }}
                     />
                     <span>Single suit (×2)</span>

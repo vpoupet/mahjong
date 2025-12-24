@@ -1,77 +1,46 @@
+import { produce } from "immer";
+import { SquareArrowRight } from "lucide-react";
 import { useState } from "react";
 import PaymentsTable from "./components/PaymentsTable";
-import Player from "./components/Player";
+import PlayerComponent from "./components/PlayerComponent";
+import PlayersScores from "./components/PlayersScores";
 import { H1 } from "./components/typography";
 import { Button } from "./components/ui/button";
-import { type PlayerData } from "./schema";
-
-function makeDefaultPlayerData(index: number, name?: string): PlayerData {
-    return {
-        index,
-        name: name ?? `Player ${index + 1}`,
-        isEastWind: false,
-        isMahjong: false,
-        isOneForMahjong: false,
-        nbFlowers: 0,
-        hasOwnFlower: false,
-        nbSeasons: 0,
-        hasOwnSeason: false,
-        isSingleSuit: false,
-        sets: [],
-    };
-}
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "./components/ui/tooltip";
+import { GameRound } from "./model/GameRound";
+import type { Player } from "./model/Player";
+import { PlayerHand } from "./model/PlayerHand";
 
 function App() {
-    const [playersData, setPlayersData] = useState<PlayerData[]>(
-        Array.from({ length: 4 }, (_, i) => makeDefaultPlayerData(i))
-    );
+    const [previousRounds, setPreviousRounds] = useState<GameRound[]>([]);
+    const [gameRound, setGameRound] = useState<GameRound>(GameRound.new());
 
-    function setPlayerData(index: number, playerData: Partial<PlayerData>) {
-        const newPlayersData = [...playersData];
-        newPlayersData[index] = { ...playersData[index], ...playerData };
-        setPlayersData(newPlayersData);
+    function resetPlayersHands() {
+        setGameRound(GameRound.resetPlayersHands(gameRound));
     }
 
-    function resetPlayersData() {
-        setPlayersData([
-            makeDefaultPlayerData(0, playersData[0].name),
-            makeDefaultPlayerData(1, playersData[1].name),
-            makeDefaultPlayerData(2, playersData[2].name),
-            makeDefaultPlayerData(3, playersData[3].name),
-        ]);
-    }
-
-    function setMahjong(index: number, value: boolean) {
-        const newPlayersData = [...playersData];
-        if (value) {
-            for (const playerData of newPlayersData) {
-                if (playerData.index !== index) {
-                    playerData.isMahjong = false;
-                    playerData.isOneForMahjong = false;
+    function nextRound() {
+        setPreviousRounds([...previousRounds, gameRound]);
+        const isMahjongEast = PlayerHand.isMahjong(
+            gameRound.players[gameRound.eastWindIndex].hand
+        );
+        setGameRound(
+            produce(gameRound, (gr) => {
+                for (const player of gr.players) {
+                    player.hand = PlayerHand.empty();
                 }
-            }
-            newPlayersData[index].isMahjong = true;
-        } else {
-            newPlayersData[index].isMahjong = false;
-            newPlayersData[index].isOneForMahjong = false;
-        }
-        setPlayersData(newPlayersData);
+                if (!isMahjongEast) {
+                    gr.eastWindIndex = (gr.eastWindIndex + 1) % 4;
+                }
+            })
+        );
     }
 
-    function setEastWind(index: number, value: boolean) {
-        const newPlayersData = [...playersData];
-        if (value) {
-            for (const playerData of newPlayersData) {
-                if (playerData.index !== index) {
-                    playerData.isEastWind = false;
-                }
-            }
-            newPlayersData[index].isEastWind = true;
-        } else {
-            newPlayersData[index].isEastWind = false;
-        }
-        setPlayersData(newPlayersData);
-    }
+    const isValidRound = GameRound.isValid(gameRound);
 
     return (
         <div className="min-h-screen min-w-screen bg-gradient-to-br from-slate-100 to-slate-300">
@@ -79,17 +48,29 @@ function App() {
                 <H1>Mahjong Score Calculator</H1>
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1">
-                        {playersData.map((playerData, index) => (
-                            <Player
+                        {gameRound.players.map((player, index) => (
+                            <PlayerComponent
                                 key={index}
-                                playerData={playerData}
-                                setPlayerData={(playerData) =>
-                                    setPlayerData(index, playerData)
-                                }
-                                setMahjong={(value) => setMahjong(index, value)}
-                                setEastWind={(value) =>
-                                    setEastWind(index, value)
-                                }
+                                player={player}
+                                setPlayer={(p: Player) => {
+                                    setGameRound(
+                                        produce(gameRound, (gameRound) => {
+                                            gameRound.players[index] = p;
+                                        })
+                                    );
+                                }}
+                                windName={GameRound.getWindForPlayer(
+                                    gameRound,
+                                    index
+                                )}
+                                setEastWindIndex={() => {
+                                    setGameRound(
+                                        produce(gameRound, (gameRound) => {
+                                            gameRound.eastWindIndex =
+                                                player.index;
+                                        })
+                                    );
+                                }}
                             />
                         ))}
                     </div>
@@ -97,11 +78,41 @@ function App() {
                         <div className="text-xl text-center">
                             Players Winnings
                         </div>
-                        <PaymentsTable playersData={playersData} />
+                        <PaymentsTable gameRound={gameRound} />
                     </div>
-                    <Button className="w-full" onClick={resetPlayersData}>
-                        Reset
-                    </Button>
+                    <div className="flex gap-2">
+                        {isValidRound.success ? (
+                            <Button className="flex-1" onClick={nextRound}>
+                                Next Round
+                            </Button>
+                        ) : (
+                            <Tooltip>
+                                <TooltipTrigger className="flex-1">
+                                    <Button
+                                        className="w-full"
+                                        onClick={nextRound}
+                                        disabled
+                                    >
+                                        <SquareArrowRight /> Next Round
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {isValidRound.message}
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
+                        <Button
+                            variant="destructive"
+                            className="flex-1"
+                            onClick={resetPlayersHands}
+                        >
+                            Reset
+                        </Button>
+                    </div>
+                    <PlayersScores
+                        gameRound={gameRound}
+                        previousRounds={previousRounds}
+                    />
                 </div>
             </main>
         </div>

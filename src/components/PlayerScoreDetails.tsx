@@ -4,15 +4,11 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import type { Score } from "@/model/types";
 import { FileSpreadsheet } from "lucide-react";
 
 type Props = {
-    score: {
-        base: number;
-        mult: number;
-        baseDetails: [number, string][];
-        multDetails: [number, string][];
-    };
+    score: Score;
 };
 
 export default function PlayerScoreDetails(props: Props) {
@@ -25,10 +21,10 @@ export default function PlayerScoreDetails(props: Props) {
                 <AccordionContent className="font-mono text-sm bg-white my-2 p-2 shadow-sm flex flex-col gap-4">
                     <div>
                         <span className="font-bold">Base score</span>
-                        {baseDetails.map(([score, description], i) => (
+                        {baseDetails.map((detail, i) => (
                             <div key={i} className="flex gap-8">
-                                <div className="w-16 text-right">{score}</div>
-                                <span className="">{description}</span>
+                                <div className="w-16 text-right">{detail.value}</div>
+                                <span className="">{detail.description}</span>
                             </div>
                         ))}
                         {baseDetails.length > 0 && <hr />}
@@ -37,10 +33,10 @@ export default function PlayerScoreDetails(props: Props) {
 
                     <div>
                         <span className="font-bold">Multiplier</span>
-                        {multDetails.map(([score, description], i) => (
+                        {multDetails.map((detail, i) => (
                             <div key={i} className="flex gap-8">
-                                <div className="w-16 text-right">× {score}</div>
-                                <span className="">{description}</span>
+                                <div className="w-16 text-right">× {detail.value}</div>
+                                <span className="">{detail.description}</span>
                             </div>
                         ))}
                         {multDetails.length > 0 && <hr />}
