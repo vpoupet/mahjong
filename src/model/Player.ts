@@ -9,10 +9,10 @@ export type Player = {
 };
 
 export const Player = {
-    new(index: number) {
+    new(index: number, name: string): Player {
         return {
             index,
-            name: `Player ${index + 1}`,
+            name: name,
             hand: PlayerHand.empty(),
             previousHands: [],
         };

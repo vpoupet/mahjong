@@ -9,14 +9,14 @@ export type GameRound = {
 };
 
 export const GameRound = {
-    new() {
+    new(playerNames: string[], eastWindIndex: number): GameRound {
         const players = [];
         for (let i = 0; i < 4; i++) {
-            players.push(Player.new(i));
+            players.push(Player.new(i, playerNames[i]));
         }
         return {
             players,
-            eastWindIndex: 0,
+            eastWindIndex: eastWindIndex ?? 0,
         };
     },
 

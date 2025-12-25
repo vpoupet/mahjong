@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import { SquareArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PaymentsTable from "./components/PaymentsTable";
 import PlayerComponent from "./components/PlayerComponent";
 import PlayersScores from "./components/PlayersScores";
@@ -16,11 +16,43 @@ import type { Player } from "./model/Player";
 import { PlayerHand } from "./model/PlayerHand";
 
 function App() {
-    const [previousRounds, setPreviousRounds] = useState<GameRound[]>([]);
-    const [gameRound, setGameRound] = useState<GameRound>(GameRound.new());
+    // Load from localStorage
+    const loadedPreviousRounds = useMemo(
+        () => localStorage.getItem("previousRounds"),
+        []
+    );
+    const loadedEastWindIndex = useMemo(
+        () => localStorage.getItem("eastWindIndex"),
+        []
+    );
+    const loadedPlayerNames = useMemo(
+        () => localStorage.getItem("playerNames"),
+        []
+    );
+    const [previousRounds, setPreviousRounds] = useState<GameRound[]>(
+        loadedPreviousRounds ? JSON.parse(loadedPreviousRounds) : []
+    );
+    const [gameRound, setGameRound] = useState<GameRound>(
+        GameRound.new(
+            loadedPlayerNames
+                ? JSON.parse(loadedPlayerNames)
+                : ["Player 1", "Player 2", "Player 3", "Player 4"],
+            loadedEastWindIndex ? JSON.parse(loadedEastWindIndex) : 0
+        )
+    );
 
     function resetPlayersHands() {
         setGameRound(GameRound.resetPlayersHands(gameRound));
+    }
+
+    function newGame() {
+        localStorage.removeItem("previousRounds");
+        localStorage.removeItem("eastWindIndex");
+        localStorage.removeItem("playerNames");
+        setPreviousRounds([]);
+        setGameRound(
+            GameRound.new(["Player 1", "Player 2", "Player 3", "Player 4"], 0)
+        );
     }
 
     function nextRound() {
@@ -29,15 +61,26 @@ function App() {
         const isMahjongEast = PlayerHand.isMahjong(
             gameRound.players[gameRound.eastWindIndex].hand
         );
-        console.log(JSON.stringify(newPreviousRounds));
+        let eastWindIndex = gameRound.eastWindIndex;
+        if (!isMahjongEast) {
+            eastWindIndex = (eastWindIndex + 1) % 4;
+        }
+        localStorage.setItem(
+            "playerNames",
+            JSON.stringify(gameRound.players.map((p) => p.name))
+        );
+        localStorage.setItem("eastWindIndex", JSON.stringify(eastWindIndex));
+        localStorage.setItem(
+            "previousRounds",
+            JSON.stringify(newPreviousRounds)
+        );
+
         setGameRound(
             produce(gameRound, (gr) => {
                 for (const player of gr.players) {
                     player.hand = PlayerHand.empty();
                 }
-                if (!isMahjongEast) {
-                    gr.eastWindIndex = (gr.eastWindIndex + 1) % 4;
-                }
+                gr.eastWindIndex = eastWindIndex;
             })
         );
     }
@@ -49,6 +92,9 @@ function App() {
             <main className="p-2 max-w-xl m-auto ">
                 <H1>Mahjong Score Calculator</H1>
                 <div className="flex flex-col gap-4">
+                    <Button variant="destructive" onClick={newGame}>
+                        New Game
+                    </Button>
                     <div className="flex flex-col gap-1">
                         {gameRound.players.map((player, index) => (
                             <PlayerComponent
@@ -114,10 +160,13 @@ function App() {
                             Reset
                         </Button>
                     </div>
-                    <PlayersScores
-                        gameRound={gameRound}
-                        previousRounds={previousRounds}
-                    />
+                    <div className="flex flex-col gap-1">
+                        <div className="text-xl text-center">Score Sheet</div>
+                        <PlayersScores
+                            gameRound={gameRound}
+                            previousRounds={previousRounds}
+                        />
+                    </div>
                 </div>
             </main>
         </div>
