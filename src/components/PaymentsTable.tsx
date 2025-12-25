@@ -6,12 +6,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import { GameRound } from "@/model/GameRound";
 import type { Player } from "@/model/Player";
-import { Crown } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { PlayerHand } from "@/model/PlayerHand";
+import { EastWindBadge, MahjongBadge } from "./Badges";
 
 type Props = {
     gameRound: GameRound;
@@ -20,6 +17,7 @@ type Props = {
 export default function PaymentsTable(props: Props) {
     const { gameRound } = props;
     const winnings = GameRound.winningsTable(gameRound);
+    const mahjongIndexes = GameRound.getMahjongIndexes(gameRound);
 
     return (
         <div className="bg-slate-50 rounded-lg p-2">
@@ -31,12 +29,10 @@ export default function PaymentsTable(props: Props) {
                             <TableHead key={player.index}>
                                 <PlayerName
                                     player={player}
-                                    isMahjong={PlayerHand.isMahjong(
-                                        player.hand
-                                    )}
                                     isEastWind={
                                         gameRound.eastWindIndex === player.index
                                     }
+                                    isMahjong={mahjongIndexes.includes(player.index)}
                                 />
                             </TableHead>
                         ))}
@@ -45,20 +41,12 @@ export default function PaymentsTable(props: Props) {
                 </TableHeader>
                 <TableBody>
                     {winnings.table.map((row, i) => (
-                        <TableRow
-                            key={i}
-                            className={cn({
-                                "bg-blue-200 hover:bg-blue-300":
-                                    gameRound.eastWindIndex === i,
-                            })}
-                        >
+                        <TableRow key={i}>
                             <TableHead>
                                 <PlayerName
                                     player={gameRound.players[i]}
-                                    isMahjong={PlayerHand.isMahjong(
-                                        gameRound.players[i].hand
-                                    )}
                                     isEastWind={gameRound.eastWindIndex === i}
+                                    isMahjong={mahjongIndexes.includes(i)}
                                 />
                             </TableHead>
                             {row.map((value, j) => (
@@ -82,19 +70,13 @@ function PlayerName(props: {
     isEastWind: boolean;
     isMahjong: boolean;
 }) {
-    const { player, isMahjong } = props;
+    const { player, isEastWind, isMahjong } = props;
 
     return (
         <div className="flex items-center gap-1">
             <span>{player.name}</span>
-            {isMahjong && (
-                <Tooltip delayDuration={200}>
-                    <TooltipTrigger>
-                        <Crown className="h-4 w-4 bg-yellow-200 rounded-full" />
-                    </TooltipTrigger>
-                    <TooltipContent>Mahjong</TooltipContent>
-                </Tooltip>
-            )}
+            {isEastWind && <EastWindBadge />}
+            {isMahjong && <MahjongBadge />}
         </div>
     );
 }

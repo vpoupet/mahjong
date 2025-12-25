@@ -1,5 +1,4 @@
 import { GameRound } from "@/model/GameRound";
-import { PlayerHand } from "@/model/PlayerHand";
 import { Crown } from "lucide-react";
 import {
     Table,
@@ -20,6 +19,22 @@ export default function PlayersScores(props: Props) {
     const previousWinnings = previousRounds.map((round) =>
         GameRound.winningsTable(round)
     );
+    const isGameRoundValid = GameRound.isValid(gameRound);
+
+    // Prepare totals per player
+    const playerTotals = [0, 0, 0, 0];
+    for (const winnings of previousWinnings) {
+        winnings.totals.forEach((total, index) => {
+            playerTotals[index] += total;
+        });
+    }
+    // Include current round if valid
+    if (isGameRoundValid.success) {
+        const currentWinnings = GameRound.winningsTable(gameRound);
+        currentWinnings.totals.forEach((total, index) => {
+            playerTotals[index] += total;
+        });
+    }
 
     return (
         <div className="bg-white rounded-lg p-4 shadow-md">
@@ -38,51 +53,75 @@ export default function PlayersScores(props: Props) {
                 </TableHeader>
                 <TableBody>
                     {previousWinnings.map((winnings, roundIndex) => (
-                        <TableRow key={roundIndex}>
-                            {winnings.totals.map((total, playerIndex) => (
-                                <TableCell
-                                    key={playerIndex}
-                                    className={"align-middle whitespace-nowrap"}
-                                >
-                                    <span className="flex items-center justify-end">
-                                        {/* East wind indicator */}
-                                        {previousRounds[roundIndex]
-                                            .eastWindIndex === playerIndex && (
-                                            <span className="flex justify-center items-center w-4 h-4 mr-2 bg-blue-200 rounded-full shadow-sm">
-                                                東
-                                            </span>
-                                        )}
-                                        {/* Mahjong indicator */}
-                                        {PlayerHand.isMahjong(
-                                            previousRounds[roundIndex].players[
-                                                playerIndex
-                                            ].hand
-                                        ) && (
-                                            <Crown className="w-4 h-4 mr-2 bg-yellow-200 rounded-full shadow-sm" />
-                                        )}
-                                        {total}
-                                    </span>
-                                </TableCell>
-                            ))}
-                        </TableRow>
+                        <WinningsRow
+                            winnings={winnings.totals}
+                            eastWindIndex={
+                                previousRounds[roundIndex].eastWindIndex
+                            }
+                            mahjongIndexes={GameRound.getMahjongIndexes(
+                                previousRounds[roundIndex]
+                            )}
+                            key={roundIndex}
+                        />
                     ))}
+                    {isGameRoundValid.success && (
+                        <WinningsRow
+                            winnings={GameRound.winningsTable(gameRound).totals}
+                            eastWindIndex={gameRound.eastWindIndex}
+                            mahjongIndexes={GameRound.getMahjongIndexes(
+                                gameRound
+                            )}
+                            className="text-gray-500"
+                        />
+                    )}
                     {/* Totals */}
                     <TableRow>
-                        {gameRound.players.map((_, playerIndex) => (
+                        {playerTotals.map((total, playerIndex) => (
                             <TableCell
                                 key={playerIndex}
                                 className="p-2 align-middle whitespace-nowrap font-bold text-right"
                             >
-                                {previousWinnings.reduce(
-                                    (acc, curr) =>
-                                        acc + curr.totals[playerIndex],
-                                    0
-                                )}
+                                {total}
                             </TableCell>
                         ))}
                     </TableRow>
                 </TableBody>
             </Table>
         </div>
+    );
+}
+
+type WinningsRowProps = {
+    winnings: number[];
+    eastWindIndex: number;
+    mahjongIndexes: number[];
+    className?: string;
+};
+
+function WinningsRow(props: WinningsRowProps) {
+    const { winnings, eastWindIndex, mahjongIndexes, className } = props;
+    return (
+        <TableRow className={className}>
+            {winnings.map((total, playerIndex) => (
+                <TableCell
+                    key={playerIndex}
+                    className="align-middle whitespace-nowrap"
+                >
+                    <span className="flex items-center justify-end">
+                        {/* East wind indicator */}
+                        {eastWindIndex === playerIndex && (
+                            <span className="flex justify-center items-center w-4 h-4 mr-2 bg-blue-200 shadow-sm">
+                                東
+                            </span>
+                        )}
+                        {/* Mahjong indicator */}
+                        {mahjongIndexes.includes(playerIndex) && (
+                            <Crown className="w-4 h-4 mr-2 bg-yellow-200 rounded-full shadow-sm" />
+                        )}
+                        {total}
+                    </span>
+                </TableCell>
+            ))}
+        </TableRow>
     );
 }

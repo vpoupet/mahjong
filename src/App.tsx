@@ -24,10 +24,12 @@ function App() {
     }
 
     function nextRound() {
-        setPreviousRounds([...previousRounds, gameRound]);
+        const newPreviousRounds = [...previousRounds, gameRound];
+        setPreviousRounds(newPreviousRounds);
         const isMahjongEast = PlayerHand.isMahjong(
             gameRound.players[gameRound.eastWindIndex].hand
         );
+        console.log(JSON.stringify(newPreviousRounds));
         setGameRound(
             produce(gameRound, (gr) => {
                 for (const player of gr.players) {
@@ -87,14 +89,17 @@ function App() {
                             </Button>
                         ) : (
                             <Tooltip>
-                                <TooltipTrigger className="flex-1">
-                                    <Button
-                                        className="w-full"
-                                        onClick={nextRound}
-                                        disabled
-                                    >
-                                        <SquareArrowRight /> Next Round
-                                    </Button>
+                                <TooltipTrigger asChild className="flex-1">
+                                    <span className="w-full">
+                                        <Button
+                                            type="button"
+                                            className="w-full"
+                                            onClick={nextRound}
+                                            disabled
+                                        >
+                                            <SquareArrowRight /> Next Round
+                                        </Button>
+                                    </span>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     {isValidRound.message}

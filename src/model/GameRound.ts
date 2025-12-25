@@ -17,7 +17,6 @@ export const GameRound = {
         return {
             players,
             eastWindIndex: 0,
-            rounds: [],
         };
     },
 
@@ -108,5 +107,11 @@ export const GameRound = {
         return {
             success: true,
         };
+    },
+
+    getMahjongIndexes(gameRound: GameRound): number[] {
+        return gameRound.players
+            .filter((player) => PlayerHand.isMahjong(player.hand))
+            .map((player) => player.index);
     },
 };
